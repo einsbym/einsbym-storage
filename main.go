@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -30,6 +31,11 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	// CORS middleware configuration
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"} // Add your React app's URL
+	r.Use(cors.New(config))
 
 	r.GET("/images", func(c *gin.Context) {
 		bucketName := "stable-diffusion"
