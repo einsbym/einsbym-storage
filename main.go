@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -19,6 +21,7 @@ func main() {
 	accessKeyID := "admin"
 	secretAccessKey := "adminpass"
 	useSSL := false
+	bucketName := "stable-diffusion"
 
 	// Initialize minio client object.
 	minioClient, err := minio.New(endpoint, &minio.Options{
@@ -37,9 +40,44 @@ func main() {
 	config.AllowOrigins = []string{"*"} // Add your React app's URL
 	r.Use(cors.New(config))
 
-	r.GET("/images", func(c *gin.Context) {
-		bucketName := "stable-diffusion"
+	r.POST("/upload", func(c *gin.Context) {
+		// Get the file from the request
+		file, err := c.FormFile("file")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "No file provided"})
+			return
+		}
 
+		// Open the uploaded file
+		src, err := file.Open()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error opening the file"})
+			return
+		}
+		defer src.Close()
+
+		// Create a buffer to hold the contents of the uploaded file
+		var buffer bytes.Buffer
+		if _, err := io.Copy(&buffer, src); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error copying the file to buffer"})
+			return
+		}
+
+		// Upload the file to Minio
+		objectName := file.Filename
+
+		_, err = minioClient.PutObject(context.Background(), bucketName, objectName, &buffer, int64(buffer.Len()), minio.PutObjectOptions{
+			ContentType: file.Header.Get("Content-Type"),
+		})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error uploading the file to Minio"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+	})
+
+	r.GET("/images", func(c *gin.Context) {
 		// Set request parameters for content-disposition.
 		reqParams := make(url.Values)
 
