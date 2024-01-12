@@ -8,20 +8,28 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 func main() {
-	endpoint := "192.168.255.112:9000"
-	accessKeyID := "admin"
-	secretAccessKey := "adminpass"
-	useSSL := false
-	bucketName := "stable-diffusion"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// Reading Minio configuration from environment variables
+	endpoint := os.Getenv("MINIO_ENDPOINT")
+	accessKeyID := os.Getenv("MINIO_ACCESS_KEY_ID")
+	secretAccessKey := os.Getenv("MINIO_SECRET_ACCESS_KEY")
+	useSSL := os.Getenv("MINIO_USE_SSL") == "true"
+	bucketName := os.Getenv("MINIO_BUCKET_NAME")
 
 	// Initialize minio client object.
 	minioClient, err := minio.New(endpoint, &minio.Options{
