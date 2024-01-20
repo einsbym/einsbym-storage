@@ -9,10 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -71,10 +73,11 @@ func main() {
 			return
 		}
 
-		// Upload the file to Minio
-		objectName := file.Filename
+		// Set a unique filename
+		objectName := uuid.NewString() + filepath.Ext(file.Filename)
 
-		_, err = minioClient.PutObject(context.Background(), bucketName, objectName, &buffer, int64(buffer.Len()), minio.PutObjectOptions{
+		// Upload the file to Minio
+		info, err := minioClient.PutObject(context.Background(), bucketName, objectName, &buffer, int64(buffer.Len()), minio.PutObjectOptions{
 			ContentType: file.Header.Get("Content-Type"),
 		})
 		if err != nil {
@@ -82,7 +85,7 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "filename": info.Key})
 	})
 
 	r.GET("/images", func(c *gin.Context) {
