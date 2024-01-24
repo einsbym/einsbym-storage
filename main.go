@@ -96,6 +96,18 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "filename": info.Key})
 	})
 
+	r.DELETE("/delete/:image-id", func(c *gin.Context) {
+		imageId := c.Param("image-id")
+
+		err = minioClient.RemoveObject(context.Background(), bucketName, imageId, minio.RemoveObjectOptions{})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "The file was removed from the server", "filename": imageId})
+	})
+
 	r.GET("/images", func(c *gin.Context) {
 		// Set request parameters for content-disposition.
 		reqParams := make(url.Values)
