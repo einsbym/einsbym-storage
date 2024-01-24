@@ -18,6 +18,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"golang.org/x/exp/slices"
 )
 
 func main() {
@@ -70,6 +71,13 @@ func main() {
 		var buffer bytes.Buffer
 		if _, err := io.Copy(&buffer, src); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error copying the file to buffer"})
+			return
+		}
+
+		supportedFileExtensions := []string{".png", ".jpg", ".jpeg", ".gif"}
+
+		if !slices.Contains(supportedFileExtensions, filepath.Ext(file.Filename)) {
+			c.JSON(http.StatusUnsupportedMediaType, gin.H{"error": "Unsupported file extension"})
 			return
 		}
 
