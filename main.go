@@ -51,7 +51,7 @@ func main() {
 	config.AllowOrigins = []string{"*"} // Add your React app's URL
 	r.Use(cors.New(config))
 
-	r.POST("/upload", func(c *gin.Context) {
+	r.POST("/storage-service/upload", func(c *gin.Context) {
 		// Get the file from the request
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -96,7 +96,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "filename": info.Key})
 	})
 
-	r.DELETE("/delete/:image-id", func(c *gin.Context) {
+	r.DELETE("/storage-service/delete/:image-id", func(c *gin.Context) {
 		imageId := c.Param("image-id")
 
 		err = minioClient.RemoveObject(context.Background(), bucketName, imageId, minio.RemoveObjectOptions{})
@@ -108,7 +108,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "The file was removed from the server", "filename": imageId})
 	})
 
-	r.GET("/images", func(c *gin.Context) {
+	r.GET("/storage-service/images", func(c *gin.Context) {
 		// Set request parameters for content-disposition.
 		reqParams := make(url.Values)
 
