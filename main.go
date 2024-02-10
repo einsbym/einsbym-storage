@@ -46,6 +46,10 @@ func main() {
 
 	r := gin.Default()
 
+	// Set trusted proxies
+	r.ForwardedByClientIP = true
+	r.SetTrustedProxies([]string{"127.0.0.1"})
+
 	// CORS middleware configuration
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"*"} // Add your React app's URL
