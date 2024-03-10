@@ -78,7 +78,7 @@ func main() {
 			return
 		}
 
-		supportedFileExtensions := []string{".png", ".jpg", ".jpeg", ".gif"}
+		supportedFileExtensions := []string{".png", ".jpg", ".jpeg", ".gif", ".mp4"}
 
 		if !slices.Contains(supportedFileExtensions, filepath.Ext(file.Filename)) {
 			c.JSON(http.StatusUnsupportedMediaType, gin.H{"error": "Unsupported file extension"})
