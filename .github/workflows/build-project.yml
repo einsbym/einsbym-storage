@@ -1,10 +1,10 @@
-name: Build Workflow
+name: Build and Test
 
 on:
   push:
-    branches: ['develop', 'main']
+    branches: ['develop', 'main', 'feature/*']
   pull_request:
-    branches: ['develop', 'main']
+    branches: ['develop', 'main', 'feature/*']
 
 jobs:
   build:
