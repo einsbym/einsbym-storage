@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -27,12 +28,21 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// Reading Minio configuration from environment variables
+	// Read server configuration from environment variables
+	serverPort := ":" + os.Getenv("SERVER_PORT")
+
+	// Read Minio configuration from environment variables
 	endpoint := os.Getenv("MINIO_ENDPOINT")
 	accessKeyID := os.Getenv("MINIO_ACCESS_KEY_ID")
 	secretAccessKey := os.Getenv("MINIO_SECRET_ACCESS_KEY")
 	useSSL := os.Getenv("MINIO_USE_SSL") == "true"
 	bucketName := os.Getenv("MINIO_BUCKET_NAME")
+
+	splashScreen, err := ioutil.ReadFile("splash_screen.txt")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(splashScreen))
 
 	// Initialize minio client object.
 	minioClient, err := minio.New(endpoint, &minio.Options{
@@ -52,7 +62,7 @@ func main() {
 
 	// CORS middleware configuration
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"*"} // Add your React app's URL
+	config.AllowOrigins = []string{"*"}
 	r.Use(cors.New(config))
 
 	r.POST("/storage-service/upload", func(c *gin.Context) {
@@ -142,7 +152,7 @@ func main() {
 		c.JSON(http.StatusOK, presignedURLs)
 	})
 
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(serverPort); err != nil {
 		log.Fatalf("error starting Gin server: %v", err)
 	}
 }
