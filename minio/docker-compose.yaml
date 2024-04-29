@@ -1,6 +1,6 @@
-version: '3'
 services:
   minio:
+    container_name: einsbym-storage
     image: minio/minio:latest
     ports:
       - '9000:9000'
