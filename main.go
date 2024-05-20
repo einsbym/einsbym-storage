@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -37,7 +36,7 @@ func main() {
 	useSSL := os.Getenv("MINIO_USE_SSL") == "true"
 	bucketName := os.Getenv("MINIO_BUCKET_NAME")
 
-	splashScreen, err := ioutil.ReadFile("splash_screen.txt")
+	splashScreen, err := os.ReadFile("splash_screen.txt")
 	if err != nil {
 		panic(err)
 	}
