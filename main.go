@@ -58,11 +58,6 @@ func main() {
 	r.ForwardedByClientIP = true
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
-	// CORS middleware configuration
-	// config := cors.DefaultConfig()
-	// config.AllowOrigins = []string{"*"}
-	// r.Use(cors.New(config))
-
 	r.POST("/storage-service/upload", func(c *gin.Context) {
 		// Get the file from the request
 		file, err := c.FormFile("file")
