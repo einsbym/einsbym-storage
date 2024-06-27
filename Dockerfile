@@ -1,26 +1,26 @@
-# Use the official golang image as the base
-FROM golang:alpine AS builder
+# Use the official Golang image as the base image
+FROM golang:1.20-alpine
 
-# Set working directory for the build context
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the application code
-COPY . .
+# Copy the Go modules manifests
+COPY go.mod go.sum ./
 
-# Install dependencies
+# Install the Go dependencies
 RUN go mod download
 
-# Build the Go binary (replace "cmd/myapp" with your actual entrypoint)
-RUN go build -o einsbym-storage main.go
+# Copy the rest of the application code
+COPY . .
 
-# Define a slimmer runtime image
-FROM alpine:latest AS runtime
+# Build the Go application
+RUN go build -o main .
 
-# Copy the built binary from the builder stage
-COPY --from=builder /app/einsbym-storage /app/einsbym-storage
+# Ensure the splash_screen.txt file is present
+COPY splash_screen.txt .
 
-# Expose the port your application listens on (replace 8080 with your actual port)
+# Specify the command to run the Go application
+CMD ["./main"]
+
+# Expose the port the app runs on
 EXPOSE 8080
-
-# Set the default command to run the application
-CMD ["/app/einsbym-storage"]

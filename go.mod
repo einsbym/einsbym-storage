@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/uuid v1.5.0
-	github.com/joho/godotenv v1.5.1
 	github.com/minio/minio-go/v7 v7.0.66
 	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a
 )
