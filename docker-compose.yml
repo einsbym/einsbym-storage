@@ -1,6 +1,9 @@
 services:
   einsbym-storage:
-    image: einsbym-storage
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: einsbym-storage
     ports:
       - 8080:8080
     environment:
@@ -10,3 +13,9 @@ services:
       - MINIO_SECRET_ACCESS_KEY=adminpass
       - MINIO_USE_SSL=false
       - MINIO_BUCKET_NAME=einsbym
+    networks:
+      - einsbym-network
+
+networks:
+  einsbym-network:
+    external: true

@@ -1,6 +1,6 @@
 services:
   minio:
-    container_name: einsbym-storage
+    container_name: minio
     image: minio/minio:latest
     ports:
       - '9000:9000'
@@ -11,6 +11,13 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
+    networks:
+      - einsbym-network
+
+networks:
+  einsbym-network:
+    external: true
+
 volumes:
   minio_data:
     driver: local
