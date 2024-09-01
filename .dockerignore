@@ -1,2 +1,6 @@
-.env
 .env.template
+.git
+.github
+.gitignore
+
+README.md
