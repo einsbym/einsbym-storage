@@ -6,7 +6,7 @@ services:
       - '9000:9000'
       - '9001:9001'
     volumes:
-      - 'minio_data:/data'
+      - 'minio:/data'
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -33,5 +33,5 @@ networks:
     external: true
 
 volumes:
-  minio_data:
+  minio:
     driver: local
